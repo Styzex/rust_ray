@@ -1,0 +1,16 @@
+[package]
+name = "rust_ray"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+gl = "0.14.0"
+glu-sys = "0.1.4"
+sdl2 = { version = "0.37.0", features = ["bundled"] }
+rayon = "1.10.0"
+
+[build-dependencies]
+cc = "1.1.31"
+
+[target.'cfg(target_os = "linux")'.dependencies]
+pkg-config = "0.3"
