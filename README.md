@@ -70,7 +70,6 @@ To compile the game engine just run this commmand `cargo build` everything shoul
   - Performance statistics
 - A simple level editor
 - Baked lighting (experimental)
-- Map from a **_*map*_.rrm** file
 
 ## Implemented Features
 
@@ -78,7 +77,9 @@ To compile the game engine just run this commmand `cargo build` everything shoul
 - 2D rendering
 - Raycasting
 - Player movement
-
+- Map from a **_*map*_.rrm** file
+    - Currently only supports maps with the size of 8 blocks
+ 
 ## The custom map file format
 
 - The name of the file will be shown in the map selection menu so map if its called map.rrm
