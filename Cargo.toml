@@ -1,15 +1,15 @@
 [package]
 name = "rust_ray"
-version = "0.1.0"
+version = "0.1.34"
 edition = "2021"
 
 [dependencies]
 gl = "0.14.0"
 glu-sys = "0.1.4"
-sdl2 = { version = "0.37.0", features = ["ttf"] }
+sdl2 = { version = "0.37.0", features = ["ttf", "bundled"] }
 
 [build-dependencies]
-cc = "1.1.31"
+vcpkg = "0.2.15"
 
 [target.'cfg(target_os = "linux")'.dependencies]
 pkg-config = "0.3"

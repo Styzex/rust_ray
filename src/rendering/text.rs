@@ -14,11 +14,11 @@ impl TextRenderer {
     pub fn new() -> Self {
         let mut texture_id = 0;
         unsafe {
-            glActiveTexture(TEXTURE0);
-            glGenTextures(1, &mut texture_id);
-            glBindTexture(TEXTURE_2D, texture_id);
-            glTexParameteri(TEXTURE_2D, TEXTURE_MIN_FILTER, LINEAR as i32);
-            glTexParameteri(TEXTURE_2D, TEXTURE_MAG_FILTER, LINEAR as i32);
+            gl::ActiveTexture(TEXTURE0);
+            gl::GenTextures(1, &mut texture_id);
+            gl::BindTexture(TEXTURE_2D, texture_id);
+            gl::TexParameteri(TEXTURE_2D, TEXTURE_MIN_FILTER, LINEAR as i32);
+            gl::TexParameteri(TEXTURE_2D, TEXTURE_MAG_FILTER, LINEAR as i32);
         }
         TextRenderer { texture_id }
     }
