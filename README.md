@@ -63,7 +63,7 @@ To compile the game engine just run this commmand `cargo build` everything shoul
 
 ## Planned Features
 
-- Implement a simple 3D renderer for obj models
+- Implement a simple 3D renderer for obj models (experimental)
 - ImGui-based debug menu
   - Variable manipulation
   - Position viewing
@@ -84,19 +84,18 @@ To compile the game engine just run this commmand `cargo build` everything shoul
 
 - The name of the file will be shown in the map selection menu so map if its called map.rrm
 - It doesn't support comments
-- Any number that is a 1 or 0 will break it
+- Any number that is a 1 or 0 will break it and possibly crash the game
 
 map.rrm
 
 ```
-size = u8
-
+SIZE=8
 [1, 1, 1, 1, 1, 1, 1, 1],
 [1, 0, 0, 0, 0, 0, 0, 1],
+[1, 0, 0, 0, 0, 1, 0, 1],
+[1, 1, 1, 1, 0, 1, 1, 1],
+[1, 0, 0, 1, 0, 0, 0, 1],
 [1, 0, 0, 0, 0, 0, 0, 1],
-[1, 0, 0, 0, 0, 0, 0, 1],
-[1, 0, 0, 0, 0, 0, 0, 1],
-[1, 0, 0, 0, 0, 0, 0, 1],
-[1, 0, 0, 0, 0, 0, 0, 1],
+[1, 0, 0, 1, 0, 0, 0, 1],
 [1, 1, 1, 1, 1, 1, 1, 1],
 ```
