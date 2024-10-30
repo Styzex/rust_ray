@@ -253,13 +253,3 @@ unsafe fn render_3d_walls(
         }
     }
 }
-
-pub fn render_main_menu() {
-    unsafe {
-        // Clear the screen
-        gl_clear_screen();
-
-        // Render any other UI elements (e.g., background, borders)
-        // ...
-    }
-}
