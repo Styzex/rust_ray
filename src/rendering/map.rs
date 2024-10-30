@@ -1,8 +1,16 @@
+//! # Map Module
+//!
+//! This module provides functionality for rendering a 2D map.
+
 use crate::rrm::{MAP_CUBE_SIZE, MAP_DATA, MAP_HEIGHT, MAP_WIDTH};
 use glu_sys::*;
 use std::*;
 
-/// renders the map from the rrm file
+/// Renders the 2D map from the rrm file.
+///
+/// # Safety
+///
+/// This function uses unsafe OpenGL calls and should be used carefully.
 pub unsafe fn draw_map_2d() {
     for y in 0..MAP_HEIGHT {
         for x in 0..MAP_WIDTH {

@@ -1,17 +1,36 @@
+//! # SDL Window Module
+//!
+//! This module provides functionality for creating and managing an SDL window with OpenGL context.
+
 use sdl2::{
     video::{GLContext, SwapInterval, Window},
     EventPump,
 };
 
+/// Represents an SDL window with OpenGL context and event handling capabilities.
 pub struct SdlWindow {
+    /// The SDL window.
     pub window: Window,
+    /// The SDL event pump for handling events.
     pub event_pump: EventPump,
     _gl_context: GLContext, // Keep the context alive as long as the window exists
 }
 
 impl SdlWindow {
-    /// Makes a new sdl window.
-    /// Example usage:
+    /// Creates a new SDL window with OpenGL context.
+    ///
+    /// # Arguments
+    ///
+    /// * `title` - The title of the window.
+    /// * `width` - The width of the window in pixels.
+    /// * `height` - The height of the window in pixels.
+    ///
+    /// # Returns
+    ///
+    /// A `Result` containing the `SdlWindow` if successful, or an error message if creation fails.
+    ///
+    /// # Example
+    ///
     /// ```
     /// let width: u32 = rendering::SCREEN_WIDTH;
     /// let height: u32 = rendering::SCREEN_HEIGHT;
@@ -54,13 +73,16 @@ impl SdlWindow {
         })
     }
 
+    /// Swaps the window's OpenGL buffers.
     pub fn swap_window(&self) {
         self.window.gl_swap_window();
     }
 }
 
 /// Checks for OpenGL errors and displays them in the console.
-/// Example:
+///
+/// # Example
+///
 /// ```
 /// OpenGL error: 1283
 /// ```

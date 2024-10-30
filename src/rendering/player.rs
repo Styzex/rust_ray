@@ -1,6 +1,21 @@
+//! # Player Module
+//!
+//! This module provides functionality for rendering the player in a 2D environment.
+
 use glu_sys::*;
 use std::*;
 
+/// Draws the player on the screen.
+///
+/// # Arguments
+///
+/// * `player_x` - The player's x-coordinate.
+/// * `player_y` - The player's y-coordinate.
+/// * `player_angle` - The player's viewing angle.
+///
+/// # Safety
+///
+/// This function uses unsafe OpenGL calls and should be used carefully.
 pub fn draw_player(player_x: f32, player_y: f32, player_angle: f32) {
     let player_x = player_x as i32;
     let player_y = player_y as i32;

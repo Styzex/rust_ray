@@ -1,3 +1,7 @@
+//! # Renderer Module
+//!
+//! This module provides functionality for rendering 2D and 3D scenes using OpenGL.
+
 use glu_sys::*;
 use std::f32::consts::PI;
 use std::*;
@@ -10,6 +14,15 @@ use crate::rrm::rrm_support::{MAP_CUBE_SIZE, MAP_DATA, MAP_HEIGHT, MAP_WIDTH};
 const FOV: f32 = PI / 3.0; // 60 degrees field of view
 const RAY_STEP: f32 = 0.1;
 
+/// Renders a 2D scene.
+///
+/// # Arguments
+///
+/// * `player_x` - The player's x-coordinate.
+/// * `player_y` - The player's y-coordinate.
+/// * `player_angle` - The player's viewing angle.
+/// * `screen_width` - The width of the screen.
+/// * `screen_height` - The height of the screen.
 pub fn render_2d(
     player_x: f32,
     player_y: f32,
@@ -31,6 +44,15 @@ pub fn render_2d(
     }
 }
 
+/// Renders a 3D scene.
+///
+/// # Arguments
+///
+/// * `player_x` - The player's x-coordinate.
+/// * `player_y` - The player's y-coordinate.
+/// * `player_angle` - The player's viewing angle.
+/// * `screen_width` - The width of the screen.
+/// * `screen_height` - The height of the screen.
 pub fn render_3d(
     player_x: f32,
     player_y: f32,
@@ -59,6 +81,16 @@ pub fn render_3d(
     }
 }
 
+/// Sets up the OpenGL viewport.
+///
+/// # Safety
+///
+/// This function uses unsafe OpenGL calls and should be used carefully.
+///
+/// # Arguments
+///
+/// * `screen_width` - The width of the screen.
+/// * `screen_height` - The height of the screen.
 pub unsafe fn setup_viewport(screen_width: i32, screen_height: i32) {
     glViewport(0, 0, screen_width, screen_height);
     glMatrixMode(GL_PROJECTION);
@@ -68,11 +100,32 @@ pub unsafe fn setup_viewport(screen_width: i32, screen_height: i32) {
     glLoadIdentity();
 }
 
+/// Clears the OpenGL screen.
+///
+/// # Safety
+///
+/// This function uses unsafe OpenGL calls and should be used carefully.
 pub unsafe fn gl_clear_screen() {
     glClearColor(0.0, 0.0, 0.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT);
 }
 
+/// Casts rays for 3D rendering.
+///
+/// # Safety
+///
+/// This function uses unsafe code and should be used carefully.
+///
+/// # Arguments
+///
+/// * `player_x` - The player's x-coordinate.
+/// * `player_y` - The player's y-coordinate.
+/// * `player_angle` - The player's viewing angle.
+/// * `screen_width` - The width of the screen.
+///
+/// # Returns
+///
+/// A vector of (x, y) coordinates representing the endpoints of the cast rays.
 unsafe fn draw_rays_3d(
     player_x: f32,
     player_y: f32,
@@ -92,6 +145,21 @@ unsafe fn draw_rays_3d(
     rays
 }
 
+/// Casts a single ray.
+///
+/// # Safety
+///
+/// This function uses unsafe code and should be used carefully.
+///
+/// # Arguments
+///
+/// * `player_x` - The player's x-coordinate.
+/// * `player_y` - The player's y-coordinate.
+/// * `ray_angle` - The angle of the ray.
+///
+/// # Returns
+///
+/// The (x, y) coordinates of where the ray hits a wall.
 unsafe fn cast_ray(player_x: f32, player_y: f32, ray_angle: f32) -> (f32, f32) {
     let delta_x = ray_angle.cos();
     let delta_y = ray_angle.sin();
@@ -113,6 +181,20 @@ unsafe fn cast_ray(player_x: f32, player_y: f32, ray_angle: f32) -> (f32, f32) {
     (ray_x, ray_y)
 }
 
+/// Renders 3D walls based on ray casting results.
+///
+/// # Safety
+///
+/// This function uses unsafe OpenGL calls and should be used carefully.
+///
+/// # Arguments
+///
+/// * `rays` - A vector of ray endpoints.
+/// * `player_x` - The player's x-coordinate.
+/// * `player_y` - The player's y-coordinate.
+/// * `player_angle` - The player's viewing angle.
+/// * `screen_width` - The width of the screen.
+/// * `screen_height` - The height of the screen.
 unsafe fn render_3d_walls(
     rays: Vec<(f32, f32)>,
     player_x: f32,
@@ -169,5 +251,15 @@ unsafe fn render_3d_walls(
 
             glEnd();
         }
+    }
+}
+
+pub fn render_main_menu() {
+    unsafe {
+        // Clear the screen
+        gl_clear_screen();
+
+        // Render any other UI elements (e.g., background, borders)
+        // ...
     }
 }
