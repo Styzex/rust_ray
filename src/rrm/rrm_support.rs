@@ -87,7 +87,7 @@ pub fn map_initialize(folder_location: &str) -> io::Result<()> {
 /// # Returns
 ///
 /// * `io::Result<Vec<FileInfo>>` - A vector of FileInfo structs if successful, or an error if there's an issue reading the directory.
-fn read_dir_to_string(folder_location: String) -> io::Result<Vec<FileInfo>> {
+pub fn read_dir_to_string(folder_location: String) -> io::Result<Vec<FileInfo>> {
     let path = Path::new(&folder_location);
     let mut file_names = Vec::new();
 
@@ -111,7 +111,7 @@ fn read_dir_to_string(folder_location: String) -> io::Result<Vec<FileInfo>> {
 /// # Safety
 ///
 /// This function uses unsafe code to modify static mutable variables. Ensure that it's called in a single-threaded context or with proper synchronization.
-fn read_map_data(path_to_file: &Path) {
+pub fn read_map_data(path_to_file: &Path) {
     let file_data = fs::read_to_string(path_to_file).unwrap();
     let data = file_data.lines().collect::<Vec<&str>>();
 
@@ -154,7 +154,7 @@ fn read_map_data(path_to_file: &Path) {
 /// # Safety
 ///
 /// This function uses unsafe code to modify static mutable variables. Ensure that it's called in a single-threaded context or with proper synchronization.
-fn allocate_variables(new_map: [[u8; 8]; 8]) {
+pub fn allocate_variables(new_map: [[u8; 8]; 8]) {
     unsafe {
         MAP_WIDTH = SIZE as usize;
         MAP_HEIGHT = SIZE as usize;
