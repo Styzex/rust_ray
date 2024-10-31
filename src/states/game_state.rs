@@ -1,11 +1,15 @@
-use crate::rendering::{render_3d, TextRenderer};
+extern crate sdl2;
+
+use crate::gl_clear_screen;
+use crate::rendering::{render_3d, BitmapFont};
 use glu_sys::*;
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
 use sdl2::pixels::Color;
-use sdl2::ttf::Sdl2TtfContext;
+use sdl2::render::WindowCanvas;
 use std::*;
 
+/// Represents the different items in the main menu
 #[derive(PartialEq)]
 enum MenuItem {
     Play,
@@ -13,6 +17,7 @@ enum MenuItem {
     Exit,
 }
 
+/// Represents the different states of the game
 pub enum GameState {
     MainMenu,
     Playing,
@@ -22,6 +27,7 @@ pub enum GameState {
     Transition,
 }
 
+/// Manages the game state and handles rendering and updating of different game states
 pub struct GameStateManager {
     menu_selection: MenuItem,
     current_state: GameState,
@@ -32,10 +38,25 @@ pub struct GameStateManager {
     screen_height: i32,
     mouse_x: f32,
     mouse_y: f32,
-    ttf_context: Sdl2TtfContext, // Added TTF context as a field
+    bitmap_font: BitmapFont,
 }
 
 impl GameStateManager {
+    /// Creates a new GameStateManager
+    ///
+    /// # Arguments
+    ///
+    /// * `screen_width` - The width of the game screen
+    /// * `screen_height` - The height of the game screen
+    /// * `player_x` - The initial x-coordinate of the player
+    /// * `player_y` - The initial y-coordinate of the player
+    /// * `player_angle` - The initial angle of the player
+    /// * `mouse_x` - The initial x-coordinate of the mouse
+    /// * `mouse_y` - The initial y-coordinate of the mouse
+    ///
+    /// # Returns
+    ///
+    /// A Result containing the new GameStateManager or an error string
     pub fn new(
         screen_width: i32,
         screen_height: i32,
@@ -45,12 +66,11 @@ impl GameStateManager {
         mouse_x: f32,
         mouse_y: f32,
     ) -> Result<Self, String> {
-        // Initialize TTF context
-        let ttf_context = sdl2::ttf::init().map_err(|e| e.to_string())?;
+        let bitmap_font = BitmapFont::new(8, 8, Color::RGB(1, 1, 1));
 
         Ok(Self {
             menu_selection: MenuItem::Play,
-            current_state: GameState::Playing,
+            current_state: GameState::MainMenu,
             player_x,
             player_y,
             player_angle,
@@ -58,7 +78,7 @@ impl GameStateManager {
             screen_height,
             mouse_x,
             mouse_y,
-            ttf_context,
+            bitmap_font,
         })
     }
 
@@ -152,59 +172,48 @@ impl GameStateManager {
         // Implement transition state update logic
     }
 
+    /// Renders the main menu
     fn render_main_menu(&self) {
-        // Clear the screen with a dark background
         unsafe {
-            glClearColor(0.1, 0.1, 0.1, 1.0);
-            glClear(GL_COLOR_BUFFER_BIT);
-        }
+            gl_clear_screen();
 
-        let font = match self.ttf_context.load_font("assets/fonts/Arial.ttf", 48) {
-            Ok(font) => font,
-            Err(e) => {
-                eprintln!("Failed to load font: {}", e);
-                return;
-            }
-        };
+            glMatrixMode(GL_PROJECTION);
+            glLoadIdentity();
+            glOrtho(
+                0.0,
+                self.screen_width as f64,
+                self.screen_height as f64,
+                0.0,
+                -1.0,
+                1.0,
+            ); // Set the orthographic projection
 
-        // Render title
-        if let Ok(title_surface) = font
-            .render("My Awesome Game")
-            .blended(Color::RGB(255, 255, 255))
-            .map_err(|e| e.to_string())
-        {
-            unsafe {
-                glMatrixMode(GL_MODELVIEW);
-                glLoadIdentity();
-                glTranslated(self.screen_width as f64 / 2.0, 100.0, 0.0);
-            }
-            TextRenderer::render(&title_surface);
-        }
+            glMatrixMode(GL_MODELVIEW);
+            glLoadIdentity();
 
-        let menu_items = [
-            ("Play", MenuItem::Play),
-            ("Settings", MenuItem::Settings),
-            ("Exit", MenuItem::Exit),
-        ];
+            // Render title
+            self.bitmap_font.render_text(100.0, 50.0, "rust ray", 8.0);
 
-        for (i, (text, item)) in menu_items.iter().enumerate() {
-            let color = if self.menu_selection == *item {
-                Color::RGB(255, 255, 0) // Yellow for selected item
-            } else {
-                Color::RGB(200, 200, 200) // Grey for unselected items
-            };
+            let menu_items = [
+                ("Play", MenuItem::Play),
+                ("Settings", MenuItem::Settings),
+                ("Exit", MenuItem::Exit),
+            ];
 
-            if let Ok(item_surface) = font.render(text).blended(color).map_err(|e| e.to_string()) {
-                unsafe {
-                    glMatrixMode(GL_MODELVIEW);
-                    glLoadIdentity();
-                    glTranslated(
-                        self.screen_width as f64 / 2.0,
-                        250.0 + (i as f64 * 60.0),
-                        0.0,
-                    );
-                }
-                TextRenderer::render(&item_surface);
+            for (i, (text, item)) in menu_items.iter().enumerate() {
+                let color = if self.menu_selection == *item {
+                    (1.0, 1.0, 0.0) // Yellow for selected item
+                } else {
+                    (0.8, 0.8, 0.8) // Grey for unselected items
+                };
+
+                glColor3f(color.0, color.1, color.2);
+                self.bitmap_font.render_text(
+                    self.screen_width as f32 / 2.0 - 50.0,
+                    250.0 + (i as f32 * 60.0),
+                    text,
+                    1.5,
+                );
             }
         }
     }

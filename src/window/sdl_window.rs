@@ -1,6 +1,7 @@
 //! # SDL Window Module
 //!
 //! This module provides functionality for creating and managing an SDL window with OpenGL context.
+extern crate sdl2;
 
 use sdl2::{
     video::{GLContext, SwapInterval, Window},
