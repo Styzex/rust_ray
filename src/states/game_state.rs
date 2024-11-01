@@ -1,7 +1,7 @@
 extern crate sdl2;
 
-use crate::gl_clear_screen;
 use crate::rendering::{render_3d, TextRenderer};
+use crate::utilities::opengl::clear_screen;
 use glu_sys::*;
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
@@ -211,7 +211,7 @@ impl GameStateManager {
     // Renders the main menu
     fn render_main_menu(&mut self) {
         unsafe {
-            gl_clear_screen();
+            clear_screen();
 
             glMatrixMode(GL_PROJECTION);
             glLoadIdentity();

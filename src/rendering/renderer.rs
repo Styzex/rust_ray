@@ -2,6 +2,7 @@
 //!
 //! This module provides functionality for rendering 2D and 3D scenes using OpenGL.
 
+use crate::utilities::opengl::{clear_screen, setup_viewport};
 use glu_sys::*;
 use std::f32::consts::PI;
 use std::*;
@@ -36,7 +37,7 @@ pub fn render_2d(
     unsafe {
         // OpenGL
         setup_viewport(screen_width, screen_height);
-        gl_clear_screen();
+        clear_screen();
 
         // My own functions
         draw_map_2d();
@@ -53,7 +54,7 @@ pub fn debug_render(
 ) {
     unsafe {
         setup_viewport(screen_width, screen_height);
-        gl_clear_screen();
+        clear_screen();
 
         // My own functions
         let rays = draw_rays_3d(player_x, player_y, player_angle, screen_width);
@@ -92,7 +93,7 @@ pub fn render_3d(
     unsafe {
         // OpenGL
         setup_viewport(screen_width, screen_height);
-        gl_clear_screen();
+        clear_screen();
 
         // My own functions
         let rays = draw_rays_3d(player_x, player_y, player_angle, screen_width);
@@ -105,35 +106,6 @@ pub fn render_3d(
             screen_height,
         );
     }
-}
-
-/// Sets up the OpenGL viewport.
-///
-/// # Safety
-///
-/// This function uses unsafe OpenGL calls and should be used carefully.
-///
-/// # Arguments
-///
-/// * `screen_width` - The width of the screen.
-/// * `screen_height` - The height of the screen.
-pub unsafe fn setup_viewport(screen_width: i32, screen_height: i32) {
-    glViewport(0, 0, screen_width, screen_height);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    gluOrtho2D(0.0, screen_width as f64, screen_height as f64, 0.0);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-}
-
-/// Clears the OpenGL screen.
-///
-/// # Safety
-///
-/// This function uses unsafe OpenGL calls and should be used carefully.
-pub unsafe fn gl_clear_screen() {
-    glClearColor(0.0, 0.0, 0.0, 1.0);
-    glClear(GL_COLOR_BUFFER_BIT);
 }
 
 /// Casts rays for 3D rendering.
