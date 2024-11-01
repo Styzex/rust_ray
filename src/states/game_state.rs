@@ -1,12 +1,11 @@
 extern crate sdl2;
 
 use crate::gl_clear_screen;
-use crate::rendering::{render_3d, BitmapFont};
+use crate::rendering::{render_3d, TextRenderer};
 use glu_sys::*;
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
 use sdl2::pixels::Color;
-use sdl2::render::WindowCanvas;
 use std::*;
 
 /// Represents the different items in the main menu
@@ -38,7 +37,6 @@ pub struct GameStateManager {
     screen_height: i32,
     mouse_x: f32,
     mouse_y: f32,
-    bitmap_font: BitmapFont,
 }
 
 impl GameStateManager {
@@ -66,8 +64,6 @@ impl GameStateManager {
         mouse_x: f32,
         mouse_y: f32,
     ) -> Result<Self, String> {
-        let bitmap_font = BitmapFont::new(8, 8, Color::RGB(1, 1, 1));
-
         Ok(Self {
             menu_selection: MenuItem::Play,
             current_state: GameState::MainMenu,
@@ -78,7 +74,6 @@ impl GameStateManager {
             screen_height,
             mouse_x,
             mouse_y,
-            bitmap_font,
         })
     }
 
@@ -90,7 +85,7 @@ impl GameStateManager {
         self.current_state = new_state;
     }
 
-    pub fn update(&mut self, event: &Event) {
+    pub fn update(&mut self, event: &Event) -> bool {
         match self.current_state {
             GameState::MainMenu => self.update_main_menu(event),
             GameState::Playing => self.update_playing(event),
@@ -112,9 +107,45 @@ impl GameStateManager {
         }
     }
 
-    fn update_main_menu(&mut self, event: &Event) {}
+    fn update_main_menu(&mut self, event: &Event) -> bool {
+        match event {
+            Event::KeyDown {
+                keycode: Some(keycode),
+                ..
+            } => match keycode {
+                &Keycode::W | &Keycode::Up => {
+                    self.menu_selection = match self.menu_selection {
+                        MenuItem::Play => MenuItem::Exit,
+                        MenuItem::Settings => MenuItem::Play,
+                        MenuItem::Exit => MenuItem::Settings,
+                    };
+                }
+                &Keycode::S | &Keycode::Down => {
+                    self.menu_selection = match self.menu_selection {
+                        MenuItem::Play => MenuItem::Settings,
+                        MenuItem::Settings => MenuItem::Exit,
+                        MenuItem::Exit => MenuItem::Play,
+                    };
+                }
+                &Keycode::SPACE | &Keycode::RETURN => match self.menu_selection {
+                    MenuItem::Play => {
+                        self.set_state(GameState::Playing);
+                    }
+                    MenuItem::Settings => {
+                        self.set_state(GameState::Settings);
+                    }
+                    MenuItem::Exit => {
+                        return true;
+                    }
+                },
+                _ => {}
+            },
+            _ => {}
+        }
+        false
+    }
 
-    fn update_playing(&mut self, event: &Event) {
+    fn update_playing(&mut self, event: &Event) -> bool {
         match event {
             Event::MouseMotion { x, y, .. } => {
                 self.mouse_x = *x as f32;
@@ -154,26 +185,31 @@ impl GameStateManager {
             }
             _ => {}
         }
+        false
     }
 
-    fn update_paused(&mut self, event: &Event) {
+    fn update_paused(&mut self, event: &Event) -> bool {
         // Implement paused state update logic
+        false
     }
 
-    fn update_game_over(&mut self, event: &Event) {
+    fn update_game_over(&mut self, event: &Event) -> bool {
         // Implement game over state update logic
+        false
     }
 
-    fn update_settings(&mut self, event: &Event) {
+    fn update_settings(&mut self, event: &Event) -> bool {
         // Implement settings state update logic
+        false
     }
 
-    fn update_transition(&mut self, event: &Event) {
+    fn update_transition(&mut self, event: &Event) -> bool {
         // Implement transition state update logic
+        false
     }
 
-    /// Renders the main menu
-    fn render_main_menu(&self) {
+    // Renders the main menu
+    fn render_main_menu(&mut self) {
         unsafe {
             gl_clear_screen();
 
@@ -191,8 +227,17 @@ impl GameStateManager {
             glMatrixMode(GL_MODELVIEW);
             glLoadIdentity();
 
-            // Render title
-            self.bitmap_font.render_text(100.0, 50.0, "rust ray", 8.0);
+            // Render title (assuming you've created a text renderer)
+            // You might want to create a separate text renderer for the title with a larger font
+            let title_renderer =
+                TextRenderer::new("./assets/font/Mario.ttf", Color::RGB(255, 255, 0))
+                    .expect("Failed to load font");
+            title_renderer.render_text(
+                self.screen_width as f32 / 8.0 - 50.0,
+                50.0,
+                "rust ray",
+                64.0,
+            );
 
             let menu_items = [
                 ("Play", MenuItem::Play),
@@ -200,19 +245,29 @@ impl GameStateManager {
                 ("Exit", MenuItem::Exit),
             ];
 
+            // Create a menu text renderer (could be same as title, but potentially smaller)
+            let menu_renderer =
+                TextRenderer::new("./assets/font/Mario.ttf", Color::RGB(204, 204, 204))
+                    .expect("Failed to load font");
+
             for (i, (text, item)) in menu_items.iter().enumerate() {
-                let color = if self.menu_selection == *item {
-                    (1.0, 1.0, 0.0) // Yellow for selected item
+                // Create a separate renderer for selected item
+                let mut selected_renderer =
+                    TextRenderer::new("./assets/font/Mario.ttf", Color::RGB(255, 255, 0))
+                        .expect("Failed to load font");
+
+                // Choose renderer based on selection
+                let current_renderer = if self.menu_selection == *item {
+                    &mut selected_renderer
                 } else {
-                    (0.8, 0.8, 0.8) // Grey for unselected items
+                    &menu_renderer
                 };
 
-                glColor3f(color.0, color.1, color.2);
-                self.bitmap_font.render_text(
-                    self.screen_width as f32 / 2.0 - 50.0,
+                current_renderer.render_text(
+                    self.screen_width as f32 / 8.0 - 50.0,
                     250.0 + (i as f32 * 60.0),
                     text,
-                    1.5,
+                    24.0,
                 );
             }
         }

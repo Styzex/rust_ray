@@ -51,13 +51,13 @@ impl SdlWindow {
             .window(title, width, height)
             .opengl()
             .build()
-            .map_err(|e| e.to_string())?;
+            .map_err(|err| err.to_string())?;
 
         // Create GL Context and make it current
         let gl_context = window.gl_create_context()?;
         window.gl_make_current(&gl_context)?;
 
-        let _ = sdl.mouse().set_relative_mouse_mode(true);
+        sdl.mouse().set_relative_mouse_mode(true);
         window.set_mouse_grab(true);
 
         video_subsystem.gl_set_swap_interval(SwapInterval::VSync)?;
