@@ -1,8 +1,6 @@
 extern crate sdl2;
 
 use crate::rendering::{render_3d, TextRenderer};
-use crate::utilities::opengl::clear_screen;
-use glu_sys::*;
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
 use sdl2::pixels::Color;
@@ -14,6 +12,13 @@ enum MenuItem {
     Play,
     Settings,
     Exit,
+}
+
+#[derive(PartialEq)]
+enum PauseItem {
+    Continue,
+    Settings,
+    RTTitle,
 }
 
 /// Represents the different states of the game
@@ -29,6 +34,7 @@ pub enum GameState {
 /// Manages the game state and handles rendering and updating of different game states
 pub struct GameStateManager {
     menu_selection: MenuItem,
+    pause_selection: PauseItem,
     current_state: GameState,
     player_x: f32,
     player_y: f32,
@@ -66,6 +72,7 @@ impl GameStateManager {
     ) -> Result<Self, String> {
         Ok(Self {
             menu_selection: MenuItem::Play,
+            pause_selection: PauseItem::Continue,
             current_state: GameState::MainMenu,
             player_x,
             player_y,
@@ -183,13 +190,52 @@ impl GameStateManager {
                 self.player_x -= self.player_angle.sin() * 2.0;
                 self.player_y -= self.player_angle.cos() * 2.0;
             }
+            Event::KeyDown {
+                keycode: Some(Keycode::Escape),
+                ..
+            } => {
+                self.set_state(GameState::Paused);
+            }
             _ => {}
         }
         false
     }
 
     fn update_paused(&mut self, event: &Event) -> bool {
-        // Implement paused state update logic
+        match event {
+            Event::KeyDown {
+                keycode: Some(keycode),
+                ..
+            } => match keycode {
+                &Keycode::W | &Keycode::Up => {
+                    self.pause_selection = match self.pause_selection {
+                        PauseItem::Continue => PauseItem::RTTitle,
+                        PauseItem::Settings => PauseItem::Continue,
+                        PauseItem::RTTitle => PauseItem::Settings,
+                    };
+                }
+                &Keycode::S | &Keycode::Down => {
+                    self.pause_selection = match self.pause_selection {
+                        PauseItem::Continue => PauseItem::Settings,
+                        PauseItem::Settings => PauseItem::RTTitle,
+                        PauseItem::RTTitle => PauseItem::Continue,
+                    };
+                }
+                &Keycode::SPACE | &Keycode::RETURN => match self.pause_selection {
+                    PauseItem::Continue => {
+                        self.set_state(GameState::Playing);
+                    }
+                    PauseItem::Settings => {
+                        self.set_state(GameState::Settings);
+                    }
+                    PauseItem::RTTitle => {
+                        self.set_state(GameState::MainMenu);
+                    }
+                },
+                _ => {}
+            },
+            _ => {}
+        }
         false
     }
 
@@ -208,68 +254,42 @@ impl GameStateManager {
         false
     }
 
-    // Renders the main menu
     fn render_main_menu(&mut self) {
-        unsafe {
-            clear_screen();
+        let title_renderer = TextRenderer::new("./assets/font/Mario.ttf", Color::RGB(255, 255, 0))
+            .expect("Failed to load font");
+        title_renderer.render_text(
+            self.screen_width as f32 / 8.0 - 50.0,
+            50.0,
+            "rust ray",
+            64.0,
+        );
 
-            glMatrixMode(GL_PROJECTION);
-            glLoadIdentity();
-            glOrtho(
-                0.0,
-                self.screen_width as f64,
-                self.screen_height as f64,
-                0.0,
-                -1.0,
-                1.0,
-            ); // Set the orthographic projection
+        let menu_items = [
+            ("Play", MenuItem::Play),
+            ("Settings", MenuItem::Settings),
+            ("Exit", MenuItem::Exit),
+        ];
 
-            glMatrixMode(GL_MODELVIEW);
-            glLoadIdentity();
+        let menu_renderer = TextRenderer::new("./assets/font/Mario.ttf", Color::RGB(204, 204, 204))
+            .expect("Failed to load font");
 
-            // Render title (assuming you've created a text renderer)
-            // You might want to create a separate text renderer for the title with a larger font
-            let title_renderer =
+        for (i, (text, item)) in menu_items.iter().enumerate() {
+            let mut selected_renderer =
                 TextRenderer::new("./assets/font/Mario.ttf", Color::RGB(255, 255, 0))
                     .expect("Failed to load font");
-            title_renderer.render_text(
+
+            let current_renderer = if self.menu_selection == *item {
+                &mut selected_renderer
+            } else {
+                &menu_renderer
+            };
+
+            current_renderer.render_text(
                 self.screen_width as f32 / 8.0 - 50.0,
-                50.0,
-                "rust ray",
-                64.0,
+                250.0 + (i as f32 * 60.0),
+                text,
+                24.0,
             );
-
-            let menu_items = [
-                ("Play", MenuItem::Play),
-                ("Settings", MenuItem::Settings),
-                ("Exit", MenuItem::Exit),
-            ];
-
-            // Create a menu text renderer (could be same as title, but potentially smaller)
-            let menu_renderer =
-                TextRenderer::new("./assets/font/Mario.ttf", Color::RGB(204, 204, 204))
-                    .expect("Failed to load font");
-
-            for (i, (text, item)) in menu_items.iter().enumerate() {
-                // Create a separate renderer for selected item
-                let mut selected_renderer =
-                    TextRenderer::new("./assets/font/Mario.ttf", Color::RGB(255, 255, 0))
-                        .expect("Failed to load font");
-
-                // Choose renderer based on selection
-                let current_renderer = if self.menu_selection == *item {
-                    &mut selected_renderer
-                } else {
-                    &menu_renderer
-                };
-
-                current_renderer.render_text(
-                    self.screen_width as f32 / 8.0 - 50.0,
-                    250.0 + (i as f32 * 60.0),
-                    text,
-                    24.0,
-                );
-            }
         }
     }
 
@@ -284,7 +304,47 @@ impl GameStateManager {
     }
 
     fn render_paused(&self) {
-        // Implement paused state rendering
+        render_3d(
+            self.player_x,
+            self.player_y,
+            self.player_angle,
+            self.screen_width,
+            self.screen_height,
+        );
+
+        let title_renderer = TextRenderer::new("./assets/font/Mario.ttf", Color::RGB(255, 255, 0))
+            .expect("Failed to load font");
+        let title_text = "Paused";
+        title_renderer.render_centered_text(self.screen_width as f32, 50.0, title_text, 64.0);
+
+        let pause_items = [
+            ("Continue", PauseItem::Continue),
+            ("Settings", PauseItem::Settings),
+            ("Return to title", PauseItem::RTTitle),
+        ];
+
+        let pause_renderer =
+            TextRenderer::new("./assets/font/Mario.ttf", Color::RGB(204, 204, 204))
+                .expect("Failed to load font");
+
+        for (i, (text, item)) in pause_items.iter().enumerate() {
+            let mut selected_renderer =
+                TextRenderer::new("./assets/font/Mario.ttf", Color::RGB(255, 255, 0))
+                    .expect("Failed to load font");
+
+            let current_renderer = if self.pause_selection == *item {
+                &mut selected_renderer
+            } else {
+                &pause_renderer
+            };
+
+            current_renderer.render_centered_text(
+                self.screen_width as f32,
+                250.0 + (i as f32 * 60.0),
+                text,
+                24.0,
+            );
+        }
     }
 
     fn render_game_over(&self) {

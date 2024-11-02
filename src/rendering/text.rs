@@ -22,6 +22,18 @@ impl TextRenderer {
         Ok(TextRenderer { font, color })
     }
 
+    fn calculate_text_width(&self, text: &str, scale: f32) -> f32 {
+        let scale = Scale::uniform(scale);
+
+        // Sum up the actual width of each glyph
+        text.chars()
+            .map(|c| {
+                let glyph = self.font.glyph(c).scaled(scale);
+                glyph.h_metrics().advance_width
+            })
+            .sum()
+    }
+
     pub fn render_text(&self, x: f32, y: f32, text: &str, font_size: f32) {
         unsafe {
             // Set text color
@@ -62,5 +74,11 @@ impl TextRenderer {
                 }
             }
         }
+    }
+
+    pub fn render_centered_text(&self, screen_width: f32, y: f32, text: &str, scale: f32) {
+        let text_width = self.calculate_text_width(text, scale);
+        let x = (screen_width - text_width) / 2.0;
+        self.render_text(x, y, text, scale);
     }
 }
