@@ -1,6 +1,8 @@
 extern crate sdl2;
 
 use crate::rendering::{render_3d, TextRenderer};
+use crate::utilities::opengl::clear_screen;
+use glu_sys::*;
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
 use sdl2::pixels::Color;
@@ -255,41 +257,62 @@ impl GameStateManager {
     }
 
     fn render_main_menu(&mut self) {
-        let title_renderer = TextRenderer::new("./assets/font/Mario.ttf", Color::RGB(255, 255, 0))
-            .expect("Failed to load font");
-        title_renderer.render_text(
-            self.screen_width as f32 / 8.0 - 50.0,
-            50.0,
-            "rust ray",
-            64.0,
-        );
+        unsafe {
+            clear_screen();
 
-        let menu_items = [
-            ("Play", MenuItem::Play),
-            ("Settings", MenuItem::Settings),
-            ("Exit", MenuItem::Exit),
-        ];
+            glMatrixMode(GL_PROJECTION);
+            glLoadIdentity();
+            glOrtho(
+                0.0,
+                self.screen_width as f64,
+                self.screen_height as f64,
+                0.0,
+                -1.0,
+                1.0,
+            );
 
-        let menu_renderer = TextRenderer::new("./assets/font/Mario.ttf", Color::RGB(204, 204, 204))
-            .expect("Failed to load font");
+            glMatrixMode(GL_MODELVIEW);
+            glLoadIdentity();
 
-        for (i, (text, item)) in menu_items.iter().enumerate() {
-            let mut selected_renderer =
+            let title_renderer =
                 TextRenderer::new("./assets/font/Mario.ttf", Color::RGB(255, 255, 0))
                     .expect("Failed to load font");
-
-            let current_renderer = if self.menu_selection == *item {
-                &mut selected_renderer
-            } else {
-                &menu_renderer
-            };
-
-            current_renderer.render_text(
+            title_renderer.render_text(
                 self.screen_width as f32 / 8.0 - 50.0,
-                250.0 + (i as f32 * 60.0),
-                text,
-                24.0,
+                50.0,
+                "rust ray",
+                64.0,
             );
+
+            let menu_items = [
+                ("Play", MenuItem::Play),
+                ("Settings", MenuItem::Settings),
+                ("Exit", MenuItem::Exit),
+            ];
+
+            let menu_renderer =
+                TextRenderer::new("./assets/font/Mario.ttf", Color::RGB(204, 204, 204))
+                    .expect("Failed to load font");
+
+            for (i, (text, item)) in menu_items.iter().enumerate() {
+                // Create a separate renderer for selected item
+                let mut selected_renderer =
+                    TextRenderer::new("./assets/font/Mario.ttf", Color::RGB(255, 255, 0))
+                        .expect("Failed to load font");
+
+                let current_renderer = if self.menu_selection == *item {
+                    &mut selected_renderer
+                } else {
+                    &menu_renderer
+                };
+
+                current_renderer.render_text(
+                    self.screen_width as f32 / 8.0 - 50.0,
+                    250.0 + (i as f32 * 60.0),
+                    text,
+                    24.0,
+                );
+            }
         }
     }
 
