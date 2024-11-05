@@ -31,9 +31,6 @@ pub fn render_2d(
     screen_width: i32,
     screen_height: i32,
 ) {
-    // let delta_x = mouse_x - player_x;
-    // let delta_y = mouse_y - player_y;
-
     unsafe {
         // OpenGL
         setup_viewport(screen_width, screen_height);
@@ -87,9 +84,6 @@ pub fn render_3d(
     screen_width: i32,
     screen_height: i32,
 ) {
-    // let delta_x = mouse_x - player_x;
-    // let delta_y = mouse_y - player_y;
-
     unsafe {
         // OpenGL
         setup_viewport(screen_width, screen_height);
