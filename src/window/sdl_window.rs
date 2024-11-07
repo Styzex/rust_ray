@@ -160,7 +160,7 @@ impl SdlWindow {
 ///
 /// ```rust
 /// // After performing OpenGL operations
-/// check_gl_error(); // Will print any OpenGL errors that occurred
+/// check_gl_error();
 /// ```
 pub fn check_gl_error() {
     unsafe {
