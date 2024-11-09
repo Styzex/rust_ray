@@ -1,13 +1,18 @@
 [package]
 name = "rust_ray"
-version = "0.1.35"
+version = "0.1.36"
 edition = "2021"
+description = "A simple ray casting game engine written in Rust."
+license = "Apache-2.0"
+repository = "https://github.com/Styzex/rust_ray"
+keywords = ["gamedev", "graphics", "game-engine", "raycasting"]
+readme = "README.md"
+categories = ["game-development", "game-engines"]
 
 [dependencies]
+dashmap = "6.1.0"
 gl = "0.14.0"
 glu-sys = "0.1.4"
+rayon = "1.10.0"
 rusttype = "0.9.3"
 sdl2 = { version = "0.37.0", features = ["bundled", "static-link"]}
-
-[build-dependencies]
-vcpkg = "0.2.15"

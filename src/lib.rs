@@ -122,6 +122,7 @@
 //! - [`window`]: Window management and creation
 //!   - [`sdl_window`]: SDL2 window implementation and OpenGL context management
 
+pub mod entities;
 pub mod rendering;
 pub mod rrm;
 pub mod utilities;
