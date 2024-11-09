@@ -42,32 +42,6 @@ pub fn render_2d(
     }
 }
 
-pub fn debug_render(
-    player_x: f32,
-    player_y: f32,
-    player_angle: f32,
-    screen_width: i32,
-    screen_height: i32,
-) {
-    unsafe {
-        setup_viewport(screen_width, screen_height);
-        clear_screen();
-
-        // My own functions
-        let rays = draw_rays_3d(player_x, player_y, player_angle, screen_width);
-        render_3d_walls(
-            rays,
-            player_x,
-            player_y,
-            player_angle,
-            screen_width,
-            screen_height,
-        );
-        draw_map_2d();
-        draw_player(player_x, player_y, player_angle);
-    }
-}
-
 /// Renders a 3D scene.
 ///
 /// # Arguments
@@ -99,6 +73,33 @@ pub fn render_3d(
             screen_width,
             screen_height,
         );
+    }
+}
+
+pub fn debug_render(
+    player_x: f32,
+    player_y: f32,
+    player_angle: f32,
+    screen_width: i32,
+    screen_height: i32,
+) {
+    unsafe {
+        // OpenGL
+        setup_viewport(screen_width, screen_height);
+        clear_screen();
+
+        // My own functions
+        let rays = draw_rays_3d(player_x, player_y, player_angle, screen_width);
+        render_3d_walls(
+            rays,
+            player_x,
+            player_y,
+            player_angle,
+            screen_width,
+            screen_height,
+        );
+        draw_map_2d();
+        draw_player(player_x, player_y, player_angle);
     }
 }
 
