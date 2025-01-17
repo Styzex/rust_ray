@@ -64,7 +64,7 @@ To compile the game engine just run this commmand `cargo build` everything shoul
 ## Planned Features
 
 - Implement a simple 3D renderer for obj models (experimental)
-- ImGui-based debug menu
+- ImGui or egui debug menu
   - Variable manipulation
   - Position viewing
   - Performance statistics
