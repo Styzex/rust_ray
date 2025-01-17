@@ -26,7 +26,7 @@ Rust Ray is released under the [Apache 2.0 License](http://www.apache.org/licens
 ## Compiling
 
 ### Windows
-To compile the game engine just run this commmand `cargo build` everything should work out of the box.
+To compile the game engine just run `cargo build` everything should work out of the box.
 
 ### Linux
 
