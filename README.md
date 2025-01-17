@@ -84,7 +84,7 @@ To compile the game engine just run `cargo build` everything should work out of 
 
 - The name of the file will be shown in the map selection menu so map if its called map.rrm
 - It doesn't support comments
-- Any number that is a 1 or 0 will break it and possibly crash the game
+- Any number that is not a 1 or 0 will break it and possibly crash the game
 
 map.rrm
 
