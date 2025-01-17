@@ -59,7 +59,7 @@ After that you should be able compile the game engine with this commmand `cargo 
 
 ### MacOS
 
-To compile the game engine just run this commmand `cargo build` everything should work out of the box.
+To compile the game engine just run `cargo build` everything should work out of the box.
 
 ## Planned Features
 
