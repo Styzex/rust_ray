@@ -41,7 +41,7 @@ impl<'a> NeutralEntities<'a> {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct NeutralEntity {
     pub x: f32,
     pub y: f32,

@@ -57,7 +57,7 @@ pub struct SdlWindow {
     pub window: Window,
     /// The SDL event pump for handling events.
     pub event_pump: EventPump,
-    _gl_context: GLContext, // Keep the context alive as long as the window exists
+    _gl_context: GLContext,
 }
 
 impl SdlWindow {

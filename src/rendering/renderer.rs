@@ -12,7 +12,7 @@ use super::player::draw_player;
 use crate::rrm::rrm_support::{MAP_CUBE_SIZE, MAP_DATA, MAP_HEIGHT, MAP_WIDTH};
 
 // Constants
-const FOV: f32 = PI / 3.0; // 60 degrees field of view
+const FOV: f32 = PI / 3.0; // 60 degrees FOV
 const RAY_STEP: f32 = 0.1;
 
 /// Renders a 2D scene.
@@ -32,11 +32,9 @@ pub fn render_2d(
     screen_height: i32,
 ) {
     unsafe {
-        // OpenGL
         setup_viewport(screen_width, screen_height);
         clear_screen();
 
-        // My own functions
         draw_map_2d();
         draw_player(player_x, player_y, player_angle);
     }
@@ -59,11 +57,9 @@ pub fn render_3d(
     screen_height: i32,
 ) {
     unsafe {
-        // OpenGL
         setup_viewport(screen_width, screen_height);
         clear_screen();
 
-        // My own functions
         let rays = draw_rays_3d(player_x, player_y, player_angle, screen_width);
         render_3d_walls(
             rays,
@@ -84,11 +80,9 @@ pub fn debug_render(
     screen_height: i32,
 ) {
     unsafe {
-        // OpenGL
         setup_viewport(screen_width, screen_height);
         clear_screen();
 
-        // My own functions
         let rays = draw_rays_3d(player_x, player_y, player_angle, screen_width);
         render_3d_walls(
             rays,
@@ -204,12 +198,11 @@ unsafe fn render_3d_walls(
         let distance = ((ray_x - player_x).powi(2) + (ray_y - player_y).powi(2)).sqrt();
         let perpendicular_distance: f32 = distance * (ray_angle - player_angle).cos();
 
-        // Calculate wall height
         let wall_height: f32 = (screen_height as f32 / perpendicular_distance) * MAP_CUBE_SIZE;
 
         unsafe {
             glBegin(GL_QUADS);
-            glColor3f(0.0, 1.0, 0.0); // Or use the wall texture color here
+            glColor3f(0.0, 1.0, 1.0);
 
             let start_x = i as f32 * slice_width;
             let end_x = start_x + slice_width;

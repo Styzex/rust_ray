@@ -8,10 +8,12 @@ Rust Ray is released under the [Apache 2.0 License](http://www.apache.org/licens
 
 ## Dependencies
 
+- gl
 - glu-sys
-- imgui
-- libm
-- sdl2
+- SDL2
+- RustType
+- Rayon
+- Dashmap
 
 ## Prerequisites
 - Run the Visual Studio 2019 build tools installer
@@ -26,7 +28,7 @@ Rust Ray is released under the [Apache 2.0 License](http://www.apache.org/licens
 ## Compiling
 
 ### Windows
-To compile the game engine just run this commmand `cargo build` everything should work out of the box.
+To compile the game engine just run `cargo build` everything should work out of the box.
 
 ### Linux
 
@@ -59,12 +61,12 @@ After that you should be able compile the game engine with this commmand `cargo 
 
 ### MacOS
 
-To compile the game engine just run this commmand `cargo build` everything should work out of the box.
+To compile the game engine just run `cargo build` everything should work out of the box.
 
 ## Planned Features
 
 - Implement a simple 3D renderer for obj models (experimental)
-- ImGui-based debug menu
+- ImGui or egui debug menu
   - Variable manipulation
   - Position viewing
   - Performance statistics
@@ -84,7 +86,7 @@ To compile the game engine just run this commmand `cargo build` everything shoul
 
 - The name of the file will be shown in the map selection menu so map if its called map.rrm
 - It doesn't support comments
-- Any number that is a 1 or 0 will break it and possibly crash the game
+- Any number that is not a 1 or 0 will break it and possibly crash your game
 
 map.rrm
 

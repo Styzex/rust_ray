@@ -55,12 +55,10 @@ impl TextRenderer {
     /// * The font file cannot be read
     /// * The font data is invalid or corrupted
     pub fn new(font_path: &str, color: Color) -> Result<Self, Box<dyn std::error::Error>> {
-        // Read font file
         let mut file = File::open(font_path)?;
         let mut buffer = Vec::new();
         file.read_to_end(&mut buffer)?;
 
-        // Parse font
         let font = Font::try_from_vec(buffer).ok_or("Error loading font")?;
 
         Ok(TextRenderer { font, color })
@@ -79,7 +77,6 @@ impl TextRenderer {
     fn calculate_text_width(&self, text: &str, scale: f32) -> f32 {
         let scale = Scale::uniform(scale);
 
-        // Sum up the actual width of each glyph
         text.chars()
             .map(|c| {
                 let glyph = self.font.glyph(c).scaled(scale);
@@ -106,7 +103,6 @@ impl TextRenderer {
     /// a valid OpenGL context.
     pub fn render_text(&self, x: f32, y: f32, text: &str, font_size: f32) {
         unsafe {
-            // Set text color
             glColor3f(
                 self.color.r as f32 / 255.0,
                 self.color.g as f32 / 255.0,

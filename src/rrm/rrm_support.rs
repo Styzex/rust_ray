@@ -3,12 +3,8 @@
 //! This module provides functionality for initializing and managing game maps.
 //! It includes functions for reading map data from files and allocating map variables.
 
-// --- Imports ---
 use std::path::Path;
 use std::*;
-
-// --- Variables ---
-// Defaults
 
 /// The size of the map (width and height).
 static mut SIZE: i32 = 8;
@@ -22,19 +18,9 @@ pub static mut MAP_HEIGHT: usize = 8;
 /// The size of each map cube in pixels or units.
 pub static mut MAP_CUBE_SIZE: f32 = 64.0;
 
-/// The actual map data, where 0 represents an empty tile and 1 represents a wall.
-pub static mut MAP_DATA: [[u8; 8]; 8] = [
-    [1, 1, 1, 1, 1, 1, 1, 1],
-    [1, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 1, 0, 0, 1, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 1, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 1, 0, 1],
-    [1, 0, 1, 0, 0, 0, 0, 1],
-    [1, 1, 1, 1, 1, 1, 1, 1],
-];
+/// Your maps data, where 0 represents an empty tile and 1 represents a wall.
+pub static mut MAP_DATA: Vec<Vec<usize>> = Vec::new();
 
-// --- Logic ---
 /// Represents information about a file in the map directory.
 pub struct FileInfo {
     /// The name of the file.
@@ -53,6 +39,10 @@ pub struct FileInfo {
 ///
 /// * `io::Result<()>` - Ok(()) if successful, or an error if the folder doesn't exist or there's an issue reading files.
 pub fn map_initialize(folder_location: &str) -> io::Result<()> {
+    unsafe {
+        MAP_DATA = vec![vec![0; SIZE as usize]; SIZE as usize];
+    }
+
     let path = Path::new(&folder_location);
 
     if path.exists() {
@@ -62,7 +52,6 @@ pub fn map_initialize(folder_location: &str) -> io::Result<()> {
                     let path_to_file = Path::new(&file_info.path);
                     if path_to_file.extension().and_then(|s| s.to_str()) == Some("rrm") {
                         read_map_data(path_to_file);
-                        // We only need to process one file, so we can break here
                         break;
                     }
                 }
@@ -116,18 +105,15 @@ pub fn read_map_data(path_to_file: &Path) {
     let data = file_data.lines().collect::<Vec<&str>>();
 
     unsafe {
-        // Parse SIZE from first line
         if let Some(size_str) = data[0].split('=').last() {
             SIZE = size_str.trim().parse().unwrap_or(8);
         }
 
-        // Skip first line (SIZE) and parse array lines
         let array_lines = &data[1..];
 
-        // Create a new map array and fill it with the data
-        let mut new_map = [[0u8; 8]; 8];
+        let mut new_map = vec![vec![0u8; SIZE as usize]; SIZE as usize];
         for (i, line) in array_lines.iter().enumerate() {
-            if i >= 8 {
+            if i >= SIZE as usize {
                 break;
             }
 
@@ -136,9 +122,8 @@ pub fn read_map_data(path_to_file: &Path) {
                 .split(',')
                 .map(|n| n.trim().parse().unwrap_or(0))
                 .collect();
-
-            for (j, &num) in nums.iter().enumerate().take(8) {
-                new_map[i][j] = num;
+            for (j, &nums) in nums.iter().enumerate().take(SIZE as usize) {
+                new_map[i][j] = nums;
             }
         }
         allocate_variables(new_map);
@@ -154,11 +139,14 @@ pub fn read_map_data(path_to_file: &Path) {
 /// # Safety
 ///
 /// This function uses unsafe code to modify static mutable variables. Ensure that it's called in a single-threaded context or with proper synchronization.
-pub fn allocate_variables(new_map: [[u8; 8]; 8]) {
+pub fn allocate_variables(new_map: Vec<Vec<u8>>) {
     unsafe {
         MAP_WIDTH = SIZE as usize;
         MAP_HEIGHT = SIZE as usize;
-        MAP_CUBE_SIZE = (SIZE * SIZE) as f32;
-        MAP_DATA = new_map; // This line is important
+
+        MAP_DATA = new_map
+            .iter()
+            .map(|row| row.iter().map(|&val| val as usize).collect())
+            .collect();
     }
 }
