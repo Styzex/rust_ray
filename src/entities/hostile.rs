@@ -88,7 +88,6 @@ impl hash::Hash for HostileEntity {
 impl HostileEntity {
     pub fn new(screen_width: i32, screen_height: i32) -> Result<Self, String> {
         unsafe {
-            // Create the x and y values directly
             let x = screen_width as f32 / SIZE * 4.0;
             let y = screen_height as f32 / SIZE * 4.0;
             let angle: f32 = PI / 3.0;
@@ -110,23 +109,17 @@ impl HostileEntity {
     }
 
     fn follow_player(&mut self, player_x: f32, player_y: f32) {
-        // Calculate direction vector
         let dx = player_x - self.x;
         let dy = player_y - self.y;
 
         self.speed = 0.5;
 
-        // Calculate distance to player
         let distance = (dx * dx + dy * dy).sqrt();
 
-        // Only move if the enemy is not already at the player's position
         if distance > 0.1 {
-            // Small threshold to avoid jittering
-            // Normalize the direction vector
             let direction_x = dx / distance;
             let direction_y = dy / distance;
 
-            // Move towards player with constant speed
             self.x += direction_x * self.speed;
             self.y += direction_y * self.speed;
         }

@@ -3,12 +3,8 @@
 //! This module provides functionality for initializing and managing game maps.
 //! It includes functions for reading map data from files and allocating map variables.
 
-// --- Imports ---
 use std::path::Path;
 use std::*;
-
-// --- Variables ---
-// Defaults
 
 /// The size of the map (width and height).
 static mut SIZE: i32 = 8;
@@ -34,7 +30,6 @@ pub static mut MAP_DATA: [[u8; 8]; 8] = [
     [1, 1, 1, 1, 1, 1, 1, 1],
 ];
 
-// --- Logic ---
 /// Represents information about a file in the map directory.
 pub struct FileInfo {
     /// The name of the file.
@@ -62,7 +57,6 @@ pub fn map_initialize(folder_location: &str) -> io::Result<()> {
                     let path_to_file = Path::new(&file_info.path);
                     if path_to_file.extension().and_then(|s| s.to_str()) == Some("rrm") {
                         read_map_data(path_to_file);
-                        // We only need to process one file, so we can break here
                         break;
                     }
                 }
@@ -116,15 +110,12 @@ pub fn read_map_data(path_to_file: &Path) {
     let data = file_data.lines().collect::<Vec<&str>>();
 
     unsafe {
-        // Parse SIZE from first line
         if let Some(size_str) = data[0].split('=').last() {
             SIZE = size_str.trim().parse().unwrap_or(8);
         }
 
-        // Skip first line (SIZE) and parse array lines
         let array_lines = &data[1..];
 
-        // Create a new map array and fill it with the data
         let mut new_map = [[0u8; 8]; 8];
         for (i, line) in array_lines.iter().enumerate() {
             if i >= 8 {
@@ -159,6 +150,6 @@ pub fn allocate_variables(new_map: [[u8; 8]; 8]) {
         MAP_WIDTH = SIZE as usize;
         MAP_HEIGHT = SIZE as usize;
         MAP_CUBE_SIZE = (SIZE * SIZE) as f32;
-        MAP_DATA = new_map; // This line is important
+        MAP_DATA = new_map;
     }
 }
