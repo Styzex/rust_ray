@@ -14,6 +14,7 @@ Rust Ray is released under the [Apache 2.0 License](http://www.apache.org/licens
 - sdl2
 
 ## Prerequisites
+- Install a version of CMake that's older than 3.3 othewrwise SDL2 won't compile
 - Run the Visual Studio 2019 build tools installer
 - For easy setup, select the Desktop development with C++ workload in the installer.
 - For a minimal setup, follow these steps:
